@@ -1,6 +1,19 @@
 # Final project!
 # Weapon-Detection
 
+**Title: Pistol and Knife Detection using YOLOv5**
+**Environment Setup**
+Install ultralytics to import YOLO...
+    $ pip install opencv-python
+    $ pip install deepface
+    $ pip install ultralytics
+
+
+**1. Introduction:**
+**2. YOLOv5 Library:**
+**3. Methodology:**
+**3.1. Image Loading:**
+
 
 # Age-Gender-Detection
 
