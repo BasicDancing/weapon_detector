@@ -7,6 +7,7 @@ Install ultralytics to import YOLO...
     $ pip install opencv-python
     $ pip install deepface
     $ pip install ultralytics
+    $ pip install keyboard
 
 
 **1. Introduction:**

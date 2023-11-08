@@ -1,7 +1,11 @@
 from ultralytics import YOLO
 import cv2
 import math 
-from EmailSending import send_mail
+
+from EmailSending import send_exit
+from HumanDetection import age_detect, age_exit
+import threading
+
 # start webcam
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
@@ -24,8 +28,11 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
               ]
 
 
+capture_exit = threading.Event()
+
 def capture_detected():
-    while True:
+    while not capture_exit.is_set():
+
         success, img = cap.read()
         results = model(img, stream=True)
 
@@ -52,11 +59,6 @@ def capture_detected():
                 cls = int(box.cls[0])
                 print("Class name -->", classNames[cls])
 
-                if classNames[cls] == 'cell phone':
-                    name = classNames[cls] + '.png'
-                    cv2.imwrite(name, img)
-                    send_mail(name)
-
                 # object details
                 org = [x1, y1]
                 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -66,8 +68,16 @@ def capture_detected():
 
                 cv2.putText(img, classNames[cls], org, font, fontScale, color, thickness)
 
+                if classNames[cls] == 'cell phone':
+                    name = classNames[cls] + '.png'
+                    cv2.imwrite(name, img)
+                    age_detect.set()
+
         cv2.imshow('Webcam', img)
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            capture_exit.set()
+            age_exit.set()
+            send_exit.set()
             break
     cap.release()
     cv2.destroyAllWindows()
