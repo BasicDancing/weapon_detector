@@ -2,8 +2,7 @@ from ultralytics import YOLO
 import cv2
 import math 
 
-from EmailSending import send_exit
-from HumanDetection import age_detect, age_exit
+from HumanDetection import age_detect
 import threading
 
 # start webcam
@@ -27,11 +26,8 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
               "teddy bear", "hair drier", "toothbrush", "weapon"
               ]
 
-
-capture_exit = threading.Event()
-
 def capture_detected():
-    while not capture_exit.is_set():
+    while True:
 
         success, img = cap.read()
         results = model(img, stream=True)
@@ -75,9 +71,6 @@ def capture_detected():
 
         cv2.imshow('Webcam', img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            capture_exit.set()
-            age_exit.set()
-            send_exit.set()
             break
     cap.release()
     cv2.destroyAllWindows()

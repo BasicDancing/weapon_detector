@@ -25,10 +25,9 @@ message["Bcc"] = receiver_email  # Recommended for mass emails
 message.attach(MIMEText(body, "plain"))
 
 send_event = threading.Event()
-send_exit = threading.Event()
 
 def send_mail():
-    while not send_exit.is_set():
+    while True:
         send_event.wait()
         send_event.clear()
 

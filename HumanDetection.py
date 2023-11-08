@@ -5,10 +5,9 @@ from EmailSending import send_event
 import threading
 
 age_detect = threading.Event()
-age_exit = threading.Event()
 
 def age_detection():
-    while not age_exit.is_set():
+    while True:
         age_detect.wait()
         age_detect.clear()
 
