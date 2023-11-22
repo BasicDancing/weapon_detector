@@ -12,11 +12,14 @@ def age_detection():
         age_detect.clear()
 
         # add image for analysis
-        img1 = cv2.imread("cell phone.png")
+        img1 = cv2.imread("weapon.png")
 
-        # Get results
-        result = DeepFace.analyze(img1, actions=['age'])
-        age = int(result[0]['age'])
-
-        if age >= 15:
-            send_event.set()
+         # Get results
+        try:
+            result = DeepFace.analyze(img1, actions=['age'], enforce_detection=False)
+            age = int(result[0]['age'])
+            print(age)
+            if age >= 15:
+                send_event.set()
+        except:
+            print("There is no face to detact!")

@@ -1,76 +1,79 @@
-from ultralytics import YOLO
 import cv2
-import math 
-
+import numpy as np
 from HumanDetection import age_detect
-import threading
 
-# start webcam
-cap = cv2.VideoCapture(0)
-cap.set(3, 640)
-cap.set(4, 480)
+net = cv2.dnn.readNet("training_model.weights", "config.cfg")
+classes = ["Weapon"]
 
-# model
-model = YOLO("yolo-Weights/yolov8n.pt")
+output_layer_names = net.getUnconnectedOutLayersNames()
+colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
-# object classes
-classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
-              "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
-              "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
-              "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat",
-              "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup",
-              "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli",
-              "carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed",
-              "diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone",
-              "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
-              "teddy bear", "hair drier", "toothbrush", "weapon"
-              ]
+
+def value():
+    val = input("Enter file name or press enter to start webcam : \n")
+    if val == "":
+        val = 0
+    return val
+
+cap = cv2.VideoCapture(value())
 
 def capture_detected():
     while True:
-
         success, img = cap.read()
-        results = model(img, stream=True)
+        if not success:
+            print("Error: Failed to read a frame from the video source.")
+            break
+        
+        height, width, channels = img.shape
+        blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
 
-        # if success:
-        #     sendImage(img)
+        net.setInput(blob)
+        outs = net.forward(output_layer_names)
 
-        # coordinates
-        for r in results:
-            boxes = r.boxes
+        class_ids = []
+        confidences = []
+        boxes = []
+        for out in outs:
+            for detection in out:
+                scores = detection[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
+                if confidence > 0.5:
+                    # Object detected
+                    center_x = int(detection[0] * width)
+                    center_y = int(detection[1] * height)
+                    w = int(detection[2] * width)
+                    h = int(detection[3] * height)
 
-            for box in boxes:
-                # bounding box
-                x1, y1, x2, y2 = box.xyxy[0]
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2) # convert to int values
+                    # Rectangle coordinates
+                    x = int(center_x - w / 2)
+                    y = int(center_y - h / 2)
 
-                # put box in cam
-                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
+                    boxes.append([x, y, w, h])
+                    confidences.append(float(confidence))
+                    class_ids.append(class_id)
 
-                # confidence
-                confidence = math.ceil((box.conf[0]*100))/100
-                print("Confidence --->",confidence)
+        indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+        print(indexes)
+        if indexes == 0: 
+            name = 'weapon' + '.png'
+            cv2.imwrite(name, img)
+            age_detect.set()
+            print("weapon detected in frame")
 
-                # class name
-                cls = int(box.cls[0])
-                print("Class name -->", classNames[cls])
+        font = cv2.FONT_HERSHEY_PLAIN
+        for i in range(len(boxes)):
+            if i in indexes:
+                x, y, w, h = boxes[i]
+                label = str(classes[class_ids[i]])
+                color = colors[class_ids[i]]
+                cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+                cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
 
-                # object details
-                org = [x1, y1]
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                fontScale = 1
-                color = (255, 0, 0)
-                thickness = 2
-
-                cv2.putText(img, classNames[cls], org, font, fontScale, color, thickness)
-
-                if classNames[cls] == 'cell phone':
-                    name = classNames[cls] + '.png'
-                    cv2.imwrite(name, img)
-                    age_detect.set()
-
-        cv2.imshow('Webcam', img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        # frame = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
+        cv2.imshow("Image", img)
+        key = cv2.waitKey(1)
+        if key == 27:
             break
     cap.release()
     cv2.destroyAllWindows()

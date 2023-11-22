@@ -31,7 +31,7 @@ def send_mail():
         send_event.wait()
         send_event.clear()
 
-        filename = 'cell phone.png'  # In same directory as script
+        filename = 'weapon.png'  # In same directory as script
 
         # Open PDF file in binary mode
         with open(filename, "rb") as attachment:
