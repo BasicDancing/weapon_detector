@@ -6,12 +6,10 @@
 Install ultralytics to import YOLO...
     $ pip install opencv-python
     $ pip install deepface
-    $ pip install ultralytics
-    $ pip install keyboard
 
 
 **1. Introduction:**
-**2. YOLOv5 Library:**
+**2. YOLOv3 Library:**
 **3. Methodology:**
 **3.1. Image Loading:**
 
@@ -61,3 +59,9 @@ Age and gender detection using the DeepFace library is a valuable tool in face a
 
 ---
 Please note that this report is a theoretical explanation of the code provided earlier and doesn't include actual code implementation. The report assumes that the reader is already familiar with the concepts of deep learning and facial analysis.
+
+
+# Trained model
+
+training model: 
+https://drive.google.com/file/d/1gBUlmXC0IWATxl7Cevvh3SXwXFg0UgHq/view?usp=sharing

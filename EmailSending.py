@@ -5,24 +5,9 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+
+
 import threading
-
-# Setup an email server
-subject = "An email with attachment from Python"
-body = "This is an email with attachment sent from Python"
-sender_email = "mail.server.tech@gmail.com"
-receiver_email = "muhammad.alifbabu@gmail.com"
-password = "tuns rrbt xpio gjmx"
-
-# Create a multipart message and set headers
-message = MIMEMultipart()
-message["From"] = sender_email
-message["To"] = receiver_email
-message["Subject"] = subject
-message["Bcc"] = receiver_email  # Recommended for mass emails
-
-# Add body to email
-message.attach(MIMEText(body, "plain"))
 
 send_event = threading.Event()
 
@@ -30,6 +15,27 @@ def send_mail():
     while True:
         send_event.wait()
         send_event.clear()
+
+        age_file = open("age.txt","r+")
+
+        # Setup an email server
+        subject = "A weapon is detected!"
+        body = "Weapon is detected. Maybe crime will happen by a person. Whose age is around : " + age_file.read()
+        sender_email = "mail.server.tech@gmail.com"
+        receiver_email = "muhammad.alifbabu@gmail.com"
+        password = "tuns rrbt xpio gjmx"
+
+        # Create a multipart message and set headers
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = receiver_email
+        message["Subject"] = subject
+        message["Bcc"] = receiver_email  # Recommended for mass emails
+
+        age_file.close()
+
+        # Add body to email
+        message.attach(MIMEText(body, "plain"))
 
         filename = 'weapon.png'  # In same directory as script
 
