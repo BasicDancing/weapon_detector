@@ -5,8 +5,6 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-
-
 import threading
 
 send_event = threading.Event()
@@ -20,9 +18,9 @@ def send_mail():
 
         # Setup an email server
         subject = "A weapon is detected!"
-        body = "Weapon is detected. Maybe crime will happen by a person. Whose age is around : " + age_file.read()
+        body = "- Weapon is detected. \n- Maybe crime will happen by a person. \n- Whose probable detials are : \n" + age_file.read()
         sender_email = "mail.server.tech@gmail.com"
-        receiver_email = "muhammad.alifbabu@gmail.com"
+        receiver_email = "klintonrozario@gmail.com"
         password = "tuns rrbt xpio gjmx"
 
         # Create a multipart message and set headers

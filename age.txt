@@ -1,1 +1,3 @@
-35
+Age : 38
+Gender : Man
+Emotion : sad

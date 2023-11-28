@@ -21,13 +21,21 @@ def age_detection():
 
         age = "There is no face to detact!"
 
-         # Get results
+            # Get results
         try:
-            result = DeepFace.analyze(img1, actions=['age'], enforce_detection=False)
+            result = DeepFace.analyze(img1, 
+            actions=['age', 'gender', 'emotion'], 
+            enforce_detection=False)
+            
             age = int(result[0]['age'])
-            print("Age :", age)
+            o_age = "Age : " + str(age)
+            gender = "Gender : " + str(result[0]['dominant_gender'])
+            emotion = "Emotion : " + str(result[0]['dominant_emotion'])
+            print(age)
+            print(gender)
+            print(emotion)
 
-            write_age(age)
+            write_age(str(o_age + "\n" + gender + "\n" + emotion + "\n"))
 
             if age >= 15:
                 send_event.set()

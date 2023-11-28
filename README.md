@@ -63,5 +63,4 @@ Please note that this report is a theoretical explanation of the code provided e
 
 # Trained model
 
-training model: 
-https://drive.google.com/file/d/1gBUlmXC0IWATxl7Cevvh3SXwXFg0UgHq/view?usp=sharing
+- [Training Model](https://drive.google.com/file/d/1gBUlmXC0IWATxl7Cevvh3SXwXFg0UgHq/view?usp=sharing)
