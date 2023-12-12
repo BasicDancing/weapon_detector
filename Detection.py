@@ -1,3 +1,4 @@
+from datetime import datetime
 import cv2
 import numpy as np
 from HumanDetection import age_detect
@@ -8,7 +9,7 @@ classes = ["Weapon"]
 output_layer_names = net.getUnconnectedOutLayersNames()
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
-
+# Camera Selection
 def value():
     val = input("Enter file name or press enter to start webcam : \n")
     if val == "":
@@ -17,13 +18,46 @@ def value():
 
 cap = cv2.VideoCapture(value())
 
+def current_time():
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    return 'record/CLIP_' + current_time + '.mp4'
+
+# Video Recording
+frames = []
+
+def video_recording():
+    if not frames:
+        return
+
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+ 
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
+    video_out = cv2.VideoWriter(current_time(), fourcc, 20.0, (width, height))
+
+    for frame in frames:
+        video_out.write(frame)
+    
+    print(frames)
+    frames.clear()
+    video_out.release()
+
+# Image Capturing
+def image_capturing(img):
+    name = 'weapon' + '.png'
+    cv2.imwrite(name, img)
+    print("Weapon detected in frame")
+
+# Main functionalities...
 def capture_detected():
-    while True:
+
+    global video_name 
+    while cap.isOpened():
         success, img = cap.read()
         if not success:
             print("Error: Failed to read a frame from the video source.")
             break
-        
+
         height, width, channels = img.shape
         blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
 
@@ -55,11 +89,18 @@ def capture_detected():
 
         indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
         print(indexes)
-        if indexes == 0: 
-            name = 'weapon' + '.png'
-            cv2.imwrite(name, img)
+
+        # Decided to detect
+        if indexes == 0 or indexes == 1 or indexes == 2:
+            # Image capture
+            image_capturing(img)
             age_detect.set()
-            print("weapon detected in frame")
+
+            # Video write
+            frames.append(img)
+        else:
+            video_recording()
+            age_detect.wait()
 
         font = cv2.FONT_HERSHEY_PLAIN
         for i in range(len(boxes)):
@@ -72,8 +113,7 @@ def capture_detected():
 
         # frame = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
         cv2.imshow("Image", img)
-        key = cv2.waitKey(1)
-        if key == 27:
-            break
-    cap.release()
+        cv2.waitKey(1)
+
+    cap.release()  # Release the video writer
     cv2.destroyAllWindows()

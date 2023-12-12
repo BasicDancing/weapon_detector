@@ -39,5 +39,7 @@ def age_detection():
 
             if age >= 15:
                 send_event.set()
+            else:
+                send_event.wait()
         except:
             print(age)
