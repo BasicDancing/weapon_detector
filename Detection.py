@@ -41,6 +41,7 @@ def video_recording():
     print(frames)
     frames.clear()
     video_out.release()
+    return
 
 # Image Capturing
 def image_capturing(img):
@@ -100,7 +101,6 @@ def capture_detected():
             frames.append(img)
         else:
             video_recording()
-            age_detect.wait()
 
         font = cv2.FONT_HERSHEY_PLAIN
         for i in range(len(boxes)):

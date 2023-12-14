@@ -66,3 +66,6 @@ def send_mail():
             print("Email sent successfully")
         except Exception as e:
             print(f"Email could not be sent. Error: {str(e)}")
+        
+        #reset wait...
+        send_event.wait()
